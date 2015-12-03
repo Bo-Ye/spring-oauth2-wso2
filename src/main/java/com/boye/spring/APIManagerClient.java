@@ -3,9 +3,7 @@ package com.boye.spring;
 import org.apache.log4j.Logger;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.security.oauth2.client.token.DefaultAccessTokenRequest;
 import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordAccessTokenProvider;
 import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordResourceDetails;
 
@@ -18,17 +16,17 @@ import java.util.List;
 public class APIManagerClient {
     private static final Logger logger = Logger.getLogger(APIManagerClient.class);
     private final static String TOKEN_URL = "https://localhost:8243/token";
-    private final static String CLIENT_ID = "0d6YBfUzZfvDwxlQ768Cjl0voesa";
-    private final static String CLIENT_SECRET = "wfprQBED0MUiufJnUSTZVOwFxgoa";
-    private final static String USERNAME = "admin";
-    private final static String PASSWORD = "admin";
+    private final static String CLIENT_ID = "0d6YBfUzZfvDwxlQ768Cjl0voesa";  //substitute yours for it
+    private final static String CLIENT_SECRET = "wfprQBED0MUiufJnUSTZVOwFxgoa"; //substitute yours for it
+    private final static String USERNAME = "admin"; //substitute yours for it
+    private final static String PASSWORD = "admin"; //substitute yours for it
     private final static String API_URL = "https://localhost:8243/httpbin/1.0/ip";
 
     public static void main(String[] args) throws NoSuchAlgorithmException, KeyManagementException {
         new APIManagerClient().callAPI();
     }
 
-    private void setSSL(OAuth2RestTemplate oAuth2RestTemplate) throws KeyManagementException, NoSuchAlgorithmException {
+    private void setNoSSL(OAuth2RestTemplate oAuth2RestTemplate) throws KeyManagementException, NoSuchAlgorithmException {
         //request factory
         ClientHttpRequestFactory requestFactory = new SSLContextRequestFactory();
         oAuth2RestTemplate.setRequestFactory(requestFactory);
@@ -54,9 +52,9 @@ public class APIManagerClient {
         resource.setUsername(USERNAME);
         resource.setPassword(PASSWORD);
         //create rest template
-        OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(resource, new DefaultOAuth2ClientContext(new DefaultAccessTokenRequest()));
-        this.setSSL(oAuth2RestTemplate);
-        this.setInterceptor(oAuth2RestTemplate);
+        OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(resource);
+        this.setNoSSL(oAuth2RestTemplate); //to ignore ssl
+        this.setInterceptor(oAuth2RestTemplate); // the critical trick to workaround OAuth2 token issue.
         String result = oAuth2RestTemplate.getForObject(API_URL, String.class);
         logger.info("Result is " + result);
     }

@@ -19,11 +19,9 @@ public class SSLContextRequestFactory extends SimpleClientHttpRequestFactory {
         SSLContext sslContext = SSLContext.getInstance("TLS");
         sslContext.init(null, new TrustManager[]{new X509TrustManager() {
             public void checkClientTrusted(X509Certificate[] chain, String authType) {
-
             }
 
             public void checkServerTrusted(X509Certificate[] chain, String authType) {
-
             }
 
             public X509Certificate[] getAcceptedIssuers() {
